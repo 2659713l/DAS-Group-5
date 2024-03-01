@@ -12,6 +12,7 @@ editor_options:
   chunk_output_type: console
 ---
 
+<<<<<<< HEAD
 ## 
 
 # Install and load the required libraries
@@ -28,3 +29,13 @@ data <- data %>%
     TRUE ~ 0                    # Assign 0 to every other category
   ))
 
+=======
+# Introduction {#sec-intro}
+
+
+# Exploratory Analysis {#sec-exp}
+
+# Formal Analysis {#sec-formal}
+
+# Conclusion {#sec-con}
+>>>>>>> main
