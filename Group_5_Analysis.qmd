@@ -12,4 +12,16 @@ editor_options:
   chunk_output_type: console
 ---
 
-## 
+# Introduction {#sec-intro}
+
+```{r}
+#| echo: false
+
+Project11 <- read.csv("~/Desktop/STATS4052/DAProject11.csv")
+```
+
+# Exploratory Analysis {#sec-exp}
+
+# Formal Analysis {#sec-formal}
+
+# Conclusion {#sec-con}
