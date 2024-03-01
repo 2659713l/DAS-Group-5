@@ -12,8 +12,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-<<<<<<< Updated upstream
-=======
+
 ```{r}
 #| echo: false
 
@@ -32,7 +31,7 @@ data <- data %>%
   ))
 ```
 
->>>>>>> Stashed changes
+
 # Introduction {#sec-intro}
 
 # Exploratory Analysis {#sec-exp}
