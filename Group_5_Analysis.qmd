@@ -15,6 +15,9 @@ editor_options:
 <<<<<<< HEAD
 ## 
 
+```{r}
+#| echo: false
+
 # Install and load the required libraries
 install.packages("dplyr")
 library(dplyr)             
@@ -28,6 +31,8 @@ data <- data %>%
     BMIgroup == "Obese" ~ 1,   # Assign 1 to 'obese'
     TRUE ~ 0                    # Assign 0 to every other category
   ))
+```
+
 
 =======
 # Introduction {#sec-intro}
