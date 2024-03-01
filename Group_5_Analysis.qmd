@@ -13,3 +13,18 @@ editor_options:
 ---
 
 ## 
+
+# Install and load the required libraries
+install.packages("dplyr")
+library(dplyr)             
+
+# Read in the data
+data <- read.csv("DAProject11.csv")
+
+# Add a new column called IsObese based on the value of BMI group
+data <- data %>%
+  mutate(IsObese = case_when(
+    BMIgroup == "Obese" ~ 1,   # Assign 1 to 'obese'
+    TRUE ~ 0                    # Assign 0 to every other category
+  ))
+
