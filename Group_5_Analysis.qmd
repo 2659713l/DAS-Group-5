@@ -12,8 +12,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-<<<<<<< HEAD
-## 
 
 ```{r}
 #| echo: false
@@ -34,7 +32,6 @@ data <- data %>%
 ```
 
 
-=======
 # Introduction {#sec-intro}
 
 
@@ -43,4 +40,3 @@ data <- data %>%
 # Formal Analysis {#sec-formal}
 
 # Conclusion {#sec-con}
->>>>>>> main
