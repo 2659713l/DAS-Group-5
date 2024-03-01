@@ -12,6 +12,27 @@ editor_options:
   chunk_output_type: console
 ---
 
+<<<<<<< Updated upstream
+=======
+```{r}
+#| echo: false
+
+# Install and load the required libraries
+install.packages("dplyr")
+library(dplyr)             
+
+# Read in the data
+data <- read.csv("DAProject11.csv")
+
+# Add a new column called IsObese based on the value of BMI group
+data <- data %>%
+  mutate(IsObese = case_when(
+    BMIgroup == "Obese" ~ 1,   # Assign 1 to 'obese'
+    TRUE ~ 0                    # Assign 0 to every other category
+  ))
+```
+
+>>>>>>> Stashed changes
 # Introduction {#sec-intro}
 
 # Exploratory Analysis {#sec-exp}
