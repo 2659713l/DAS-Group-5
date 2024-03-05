@@ -12,6 +12,7 @@ editor_options:
   chunk_output_type: console
 ---
 
+
 ```{r}
 #| echo: false
 
@@ -29,6 +30,7 @@ data <- data %>%
     TRUE ~ 0                    # Assign 0 to every other category
   ))
 ```
+
 
 # Introduction {#sec-intro}
 
