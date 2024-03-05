@@ -41,6 +41,22 @@ data <- data %>%
   ))
 ```
 
+
+```{r}
+#| echo: false
+# Alternative to calculating a binary variable for obese
+data <- read.csv("DAProject11.csv")
+
+ObesityStatus <- factor(data$BMIgroup == "Obese", levels = c(FALSE, TRUE), labels = c("Not Obese", "Obese"))
+ObesityStatus
+levels(data$ObesityStatus)
+
+data <- cbind(data, ObesityStatus)
+
+```
+
+
+
 # Introduction {#sec-intro}
 
 # Exploratory Analysis {#sec-exp}
