@@ -12,9 +12,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-<<<<<<< HEAD
-## 
-
 ```{r}
 #| echo: false
 
@@ -33,14 +30,10 @@ data <- data %>%
   ))
 ```
 
-
-=======
 # Introduction {#sec-intro}
-
 
 # Exploratory Analysis {#sec-exp}
 
 # Formal Analysis {#sec-formal}
 
 # Conclusion {#sec-con}
->>>>>>> main
