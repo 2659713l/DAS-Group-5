@@ -1,7 +1,5 @@
 ---
 title: "Group_5_Analysis"
-format: html
-editor: visual
 number-sections: true
 format: 
   html:
@@ -12,12 +10,10 @@ editor_options:
   chunk_output_type: console
 ---
 
-
 ```{r}
 #| echo: false
 
 # Install and load the required libraries
-install.packages("dplyr")
 library(dplyr)             
 
 # Read in the data
@@ -34,6 +30,7 @@ data <- data %>%
 # Introduction {#sec-intro}
 
 # Exploratory Analysis {#sec-exp}
+
 ```{r}
 #| echo: false
 
@@ -44,8 +41,8 @@ ggplot(data = data.obese, aes(x = ObesityStatus, y = Year, fill = ObesityStatus)
   theme(legend.position = "none")
 ```
 
-
 # Formal Analysis {#sec-formal}
+
 ```{r}
 #| echo: false
 model <- logistic_reg() |> 
