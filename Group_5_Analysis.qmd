@@ -12,8 +12,11 @@ editor_options:
   chunk_output_type: console
 ---
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 ## 
+=======
+>>>>>>> Stashed changes
 
 ```{r}
 #| echo: false
@@ -33,6 +36,7 @@ data <- data %>%
   ))
 ```
 
+<<<<<<< Updated upstream
 ```{r}
 #| echo: false
 # Alternative to calculating a binary variable for obese
@@ -48,6 +52,9 @@ data <- cbind(data, ObesityStatus)
 
 
 =======
+=======
+
+>>>>>>> Stashed changes
 # Introduction {#sec-intro}
 
 
