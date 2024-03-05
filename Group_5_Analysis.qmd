@@ -31,11 +31,88 @@ data <- data %>%
   ))
 ```
 
-
 # Introduction {#sec-intro}
 
 # Exploratory Analysis {#sec-exp}
+```{r}
+#| echo: false
+
+attach(data.obese)
+ggplot(data = data.obese, aes(x = ObesityStatus, y = Year, fill = ObesityStatus)) +
+  geom_boxplot() +
+  labs(x = "IsObese", y = "Age Group") +
+  theme(legend.position = "none")
+```
+
 
 # Formal Analysis {#sec-formal}
+```{r}
+#| echo: false
+model <- logistic_reg() |> 
+  set_engine("glm")
+model <- model |> 
+  fit(ObesityStatus ~ Year, data = data.obese) |>
+  extract_fit_engine()
+
+summary(model)
+
+
+mod.coef.logodds <- model |>
+  summary() |>
+  coef()
+
+obese.logodds.lower <- (mod.coef.logodds["Year", "Estimate"] 
+                      - 1.96 * mod.coef.logodds["Year", "Std. Error"])
+obese.logodds.lower
+obese.logodds.upper <- (mod.coef.logodds["Year", "Estimate"] 
+                      + 1.96 * mod.coef.logodds["Year", "Std. Error"])
+obese.logodds.upper
+
+plot_model(model, show.values = TRUE, transform = NULL,
+           title = "Log-Odds (Obese)", show.p = FALSE)
+
+data.obese <- data.obese |>
+  mutate(logodds.Obese = predict(model))
+data.obese
+```
+
+```{r}
+#| echo: false
+
+# Odds
+model |>
+  coef() |>
+  exp()
+
+obese.odds.lower <- exp(age.logodds.lower)
+obese.odds.lower
+obese.odds.upper <- exp(age.logodds.upper)
+obese.odds.upper
+
+plot_model(model, show.values = TRUE,
+           title = "Odds (Obese)", show.p = FALSE, axis.lim = c(1, 1.5))
+
+data.obese <- data.obese |>
+  mutate(odds.obese = exp(logodds.obese))
+```
+
+```{r}
+#| echo: false
+
+# Probabilities
+# Predictions for 2016
+plogis(mod.coef.logodds["(Intercept)", "Estimate"] 
+       + mod.coef.logodds["Year", "Estimate"] * 2016)
+
+data.obese <- data.obese |>
+  mutate(probs.obese = fitted(model))
+
+ggplot(data = data.obese, aes(x = Year, y = probs.obese)) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
+  labs(x = "Year", y = "Probability of being obese")
+
+plot_model(model, type = "pred", title = "", terms="Year [all]", axis.title = c("Age", "Prob. of being obese"))
+
+```
 
 # Conclusion {#sec-con}
