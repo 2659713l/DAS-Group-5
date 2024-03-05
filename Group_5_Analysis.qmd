@@ -12,6 +12,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4a523475e0e3cf177c1cc981b6a08e2db3b08ad1
 ```{r}
 #| echo: false
 
@@ -30,6 +34,10 @@ data <- data %>%
   ))
 ```
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4a523475e0e3cf177c1cc981b6a08e2db3b08ad1
 # Introduction {#sec-intro}
 
 # Exploratory Analysis {#sec-exp}
