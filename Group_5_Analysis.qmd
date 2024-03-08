@@ -26,6 +26,7 @@ library(janitor)
 library(tidymodels)
 library(moderndive)
 library(ggstats)
+library(sjPlot)
 ```
 
 # Introduction {#sec-intro}
@@ -76,7 +77,6 @@ ggplot(data = Project11, aes(x = Year, group = IsObese))+
 #| label: tble-logodds
 #| message: false
 #| tbl-cap: "Summary of logistic regression model"
-
 
 
 ```
