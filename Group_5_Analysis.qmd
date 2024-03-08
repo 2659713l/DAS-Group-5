@@ -45,6 +45,19 @@ Project11 <- Project11 |>
 
 ```{r}
 #| echo: false
+#| label: tbl-proportion
+#| tbl-cap: "Proportion of obseity by year"
+
+Project11 |>
+  tabyl(IsObese,Year) |>
+  adorn_percentages() |>
+  adorn_pct_formatting() |>
+  adorn_ns() |>
+  gt()
+```
+
+```{r}
+#| echo: false
 #| label: fig-barplot
 #| message: false
 #| fig-cap: "Barplot of year by Obesity"
@@ -53,16 +66,18 @@ Project11 <- Project11 |>
 #| fig-align: center
 
 
-# To show original counts
-Project11 |>
-  tabyl(IsObese,Year) |>
-  adorn_percentages() |>
-  adorn_pct_formatting() |>
-  adorn_ns()
-
 ggplot(data = Project11, aes(x = Year, group = IsObese))+
   geom_bar(aes(y = after_stat(prop), fill = IsObese), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "IsObese")
+```
+
+```{r}
+#| echo: false
+#| label: tble-logodds
+#| message: false
+#| tbl-cap: "Summary of logistic regression model"
+
+
 
 ```
 
