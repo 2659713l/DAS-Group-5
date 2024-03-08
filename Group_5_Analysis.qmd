@@ -21,125 +21,51 @@ library(tidyverse)
 library(gt)
 library(MASS)
 library(patchwork)
+library(gapminder)
+library(janitor)
+library(tidymodels)
 library(moderndive)
+library(ggstats)
 ```
-
-```{r}
-#| echo: false
-
-# Install and load the required libraries
-library(dplyr)             
-
-# Read in the data
-data <- read.csv("DAProject11.csv")
-
-# Add a new column called IsObese based on the value of BMI group
-data <- data %>%
-  mutate(IsObese = case_when(
-    BMIgroup == "Obese" ~ 1,   # Assign 1 to 'obese'
-    TRUE ~ 0                    # Assign 0 to every other category
-  ))
-```
-
-
-```{r}
-#| echo: false
-# Alternative to calculating a binary variable for obese
-data <- read.csv("DAProject11.csv")
-
-ObesityStatus <- factor(data$BMIgroup == "Obese", levels = c(FALSE, TRUE), labels = c("Not Obese", "Obese"))
-ObesityStatus
-levels(data$ObesityStatus)
-
-data <- cbind(data, ObesityStatus)
-
-```
-
-
 
 # Introduction {#sec-intro}
+
+```{r}
+#| echo: false
+
+# Read in the data
+Project11 <- read.csv("~/Desktop/STATS4052/DAS-Group-5/DAProject11.csv")
+
+# Add a new column called IsObese based on the value of BMI group
+Project11 <- Project11 |>
+  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
+```
 
 # Exploratory Analysis {#sec-exp}
 
 ```{r}
 #| echo: false
+#| label: fig-barplot
+#| message: false
+#| fig-cap: "Barplot of year by Obesity"
+#| fig-width: 4
+#| fig-height: 3
+#| fig-align: center
 
-attach(data.obese)
-ggplot(data = data.obese, aes(x = ObesityStatus, y = Year, fill = ObesityStatus)) +
-  geom_boxplot() +
-  labs(x = "IsObese", y = "Age Group") +
-  theme(legend.position = "none")
+
+# To show original counts
+Project11 |>
+  tabyl(IsObese,Year) |>
+  adorn_percentages() |>
+  adorn_pct_formatting() |>
+  adorn_ns()
+
+ggplot(data = Project11, aes(x = Year, group = IsObese))+
+  geom_bar(aes(y = after_stat(prop), fill = IsObese), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "IsObese")
+
 ```
 
 # Formal Analysis {#sec-formal}
-
-```{r}
-#| echo: false
-model <- logistic_reg() |> 
-  set_engine("glm")
-model <- model |> 
-  fit(ObesityStatus ~ Year, data = data.obese) |>
-  extract_fit_engine()
-
-summary(model)
-
-
-mod.coef.logodds <- model |>
-  summary() |>
-  coef()
-
-obese.logodds.lower <- (mod.coef.logodds["Year", "Estimate"] 
-                      - 1.96 * mod.coef.logodds["Year", "Std. Error"])
-obese.logodds.lower
-obese.logodds.upper <- (mod.coef.logodds["Year", "Estimate"] 
-                      + 1.96 * mod.coef.logodds["Year", "Std. Error"])
-obese.logodds.upper
-
-plot_model(model, show.values = TRUE, transform = NULL,
-           title = "Log-Odds (Obese)", show.p = FALSE)
-
-data.obese <- data.obese |>
-  mutate(logodds.Obese = predict(model))
-data.obese
-```
-
-```{r}
-#| echo: false
-
-# Odds
-model |>
-  coef() |>
-  exp()
-
-obese.odds.lower <- exp(age.logodds.lower)
-obese.odds.lower
-obese.odds.upper <- exp(age.logodds.upper)
-obese.odds.upper
-
-plot_model(model, show.values = TRUE,
-           title = "Odds (Obese)", show.p = FALSE, axis.lim = c(1, 1.5))
-
-data.obese <- data.obese |>
-  mutate(odds.obese = exp(logodds.obese))
-```
-
-```{r}
-#| echo: false
-
-# Probabilities
-# Predictions for 2016
-plogis(mod.coef.logodds["(Intercept)", "Estimate"] 
-       + mod.coef.logodds["Year", "Estimate"] * 2016)
-
-data.obese <- data.obese |>
-  mutate(probs.obese = fitted(model))
-
-ggplot(data = data.obese, aes(x = Year, y = probs.obese)) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
-  labs(x = "Year", y = "Probability of being obese")
-
-plot_model(model, type = "pred", title = "", terms="Year [all]", axis.title = c("Age", "Prob. of being obese"))
-
-```
 
 # Conclusion {#sec-con}
