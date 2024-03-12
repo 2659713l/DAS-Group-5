@@ -50,7 +50,7 @@ Project11 <- Project11 |>
 #| tbl-cap: "Proportion of obseity by year"
 
 Project11 |>
-  tabyl(IsObese,Year) |>
+  tabyl(Year,IsObese) |>
   adorn_percentages() |>
   adorn_pct_formatting() |>
   adorn_ns() |>
@@ -66,22 +66,29 @@ Project11 |>
 #| fig-height: 3
 #| fig-align: center
 
-
-ggplot(data = Project11, aes(x = Year, group = IsObese))+
-  geom_bar(aes(y = after_stat(prop), fill = IsObese), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "IsObese")
-```
-
-```{r}
-#| echo: false
-#| label: tble-logodds
-#| message: false
-#| tbl-cap: "Summary of logistic regression model"
-
-
-
+ggplot(data = Project11, aes(x = IsObese, group = Year))+
+  geom_bar(aes(y = after_stat(prop), fill = Year), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "Year")
 ```
 
 # Formal Analysis {#sec-formal}
+
+We fit the logistic regression model,
+
+```{r}
+#| echo: false
+#| tbl-cap: "Estimates of the intercept and slope from the fitted logistic regression model"
+#| label: tbl-estimates
+
+Project11 <- Project11 |>
+  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", 1, 0))
+
+model <- glm(IsObese ~ Year, data = Project11,
+                     family = binomial(link = "logit")) 
+Coefs <- round(coef(model), 3)
+tidy(model)[,c(1,2,3,5)] |>
+  gt() |>
+  fmt_number(decimals=4)
+```
 
 # Conclusion {#sec-con}
