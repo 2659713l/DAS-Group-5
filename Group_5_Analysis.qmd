@@ -13,6 +13,7 @@ editor_options:
 ---
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 ## 
 =======
@@ -20,6 +21,14 @@ editor_options:
 
 ```{r}
 #| echo: false
+=======
+```{r}
+#| echo: false
+
+# Install and load the required libraries
+install.packages("dplyr")
+library(dplyr)             
+>>>>>>> Stashed changes
 
 # Install and load the required libraries
 install.packages("dplyr")
@@ -51,7 +60,11 @@ data <- cbind(data, ObesityStatus)
 ```
 
 
+<<<<<<< Updated upstream
 =======
+=======
+
+>>>>>>> Stashed changes
 =======
 
 >>>>>>> Stashed changes
@@ -60,6 +73,7 @@ data <- cbind(data, ObesityStatus)
 
 # Exploratory Analysis {#sec-exp}
 ```{r}
+<<<<<<< Updated upstream
 #| echo: false
 
 attach(data.obese)
@@ -67,12 +81,33 @@ ggplot(data = data.obese, aes(x = ObesityStatus, y = Year, fill = ObesityStatus)
   geom_boxplot() +
   labs(x = "IsObese", y = "Age Group") +
   theme(legend.position = "none")
+=======
+# Select the columns of interest
+data.year <- data |>
+  select(ObesityStatus, Year)
+
+# Table of proportions by year
+data.year |>
+  tabyl(ObesityStatus, Year) |>
+  adorn_percentages() |>
+  adorn_pct_formatting() |>
+  adorn_ns() # To show original count
+
+data.year |> 
+  summary()
+
+ggplot(data.year, aes(x = Year, group = ObesityStatus)) +
+  geom_bar(aes(y = after_stat(prop), fill = ObesityStatus), stat = "count", 
+           position = "dodge") +
+  labs(y = "Proportion", fill = "ObesityStatus")
+>>>>>>> Stashed changes
 ```
 
 
 # Formal Analysis {#sec-formal}
 ```{r}
 #| echo: false
+<<<<<<< Updated upstream
 model <- logistic_reg() |> 
   set_engine("glm")
 model <- model |> 
@@ -142,3 +177,116 @@ plot_model(model, type = "pred", title = "", terms="Year [all]", axis.title = c(
 
 # Conclusion {#sec-con}
 >>>>>>> main
+=======
+# Formal Analysis- Log-Odds ----------------------------------------------------
+
+Year <- as.factor(data.year$Year)
+levels(Year)
+
+# The logistic model is given by
+model.year <- logistic_reg() |> 
+  set_engine("glm") |> 
+  fit(ObesityStatus ~ Year, data = data.year) |>
+  extract_fit_engine()
+
+model.year |>
+  summary()
+
+mod.year.coef.logodds <- model.year |>
+  summary() |>
+  coef()
+
+mod.year.coef.logodds
+
+year.logodds.upper <- (mod.year.coef.logodds["Year", "Estimate"] 
+                       + 1.96 *
+                         mod.year.coef.logodds["Year", "Std. Error"])
+year.logodds.upper
+
+
+year.logodds.lower <- (mod.year.coef.logodds["Year", "Estimate"] 
+                       - 1.96 *
+                         mod.year.coef.logodds["Year", "Std. Error"])
+year.logodds.lower
+
+plot_model(model.year, show.values = TRUE, transform = NULL, 
+           title = "Log-Odds (2013)", show.p = FALSE)
+
+# Add the estimates if the log-odds to our data set
+data.year <- data.year |>
+  mutate(logodds.2013 = predict(model.year))
+
+# Formal Analysis - Odds -------------------------------------------------------
+
+# Take exponential of log-odds coefficients
+model.year |>
+  coef() |>
+  exp()
+
+# the number of not obese
+pmin <- data.year |>
+  filter(ObesityStatus == "Not Obese") |>
+  summarize(n()) |>
+  pull()
+
+# the number of not obese people in 2013
+pmin.notobese <- data.year |>
+  filter(ObesityStatus == "Not Obese", Year == "2013") |>
+  summarize(n()) |>
+  pull()
+
+# the proportion/probability of not obese people in 2013
+prob.notobese.2013 <- pmin.notobese / pmin
+odds.notobese.2013 <- prob.notobese.2013 / (1 - prob.notobese.2013)
+odds.notobese.2013  
+
+# the number of people who are obese
+p.obese <- data.year |>
+  filter(ObesityStatus == "Obese") |>
+  summarize(n()) |>
+  pull()
+
+# the number of obese people in 2013
+p.obese.2013 <- data.year |>
+  filter(ObesityStatus == "Obese", Year == "2013") |>
+  summarize(n()) |>
+  pull()
+
+# the proportion/probability of being obese in 2013
+prob.obese.2013 <- p.obese.2013 / p.obese
+odds.obese.2013 <- prob.obese.2013 / (1 - prob.obese.2013)
+odds.ratio.obese <- odds.obese.2013 / odds.obese.2013
+
+# 95% confidence interval
+
+year.odds.lower <- exp(year.logodds.lower)
+
+year.odds.upper <- exp(year.logodds.upper)
+
+# Graph this confidence interval
+plot_model(model.year, show.values = TRUE,
+           title = "Odds (Being not obese)", show.p = FALSE)
+
+# Add the estimates to the data set
+data.year <- data.year |>
+  mutate(odds.2013 = exp(logodds.2013))
+
+# Formal analysis - Probabilities -----------------------------------------------
+
+plogis(mod.year.coef.logodds["(Intercept)", "Estimate"])
+
+plogis(mod.year.coef.logodds["(Intercept)", "Estimate"] +
+         mod.year.coef.logodds["Year", "Estimate"])
+
+data.year <- data.year |>
+  mutate(probs.2013 = fitted(model.year))
+
+plot_model(model.year, type = "pred", terms = "ObesityStatus" )
+
+
+```
+
+
+# Conclusion {#sec-con}
+
+>>>>>>> Stashed changes
