@@ -26,10 +26,10 @@ library(janitor)
 library(tidymodels)
 library(moderndive)
 library(ggstats)
-library(sjPlot)
 ```
 
 # Introduction {#sec-intro}
+Obesity levels across Scotland are monitored with the Scottish Health Surveys. This includes socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Looking specifically at data between 2013 and 2016, in this report we will be looking at whether or not the prevalence of obesity has changed over this time period. Also looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status. 
 
 ```{r}
 #| echo: false
@@ -40,6 +40,8 @@ Project11 <- read.csv("DAProject11.csv")
 # Add a new column called IsObese based on the value of BMI group
 Project11 <- Project11 |>
   dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
+
+Project11$Year <- as.factor(Project11$Year)
 ```
 
 # Exploratory Analysis {#sec-exp}
@@ -50,7 +52,7 @@ Project11 <- Project11 |>
 #| tbl-cap: "Proportion of obseity by year"
 
 Project11 |>
-  tabyl(IsObese,Year) |>
+  tabyl(Year,IsObese) |>
   adorn_percentages() |>
   adorn_pct_formatting() |>
   adorn_ns() |>
@@ -66,51 +68,32 @@ Project11 |>
 #| fig-height: 3
 #| fig-align: center
 
-
-ggplot(data = Project11, aes(x = Year, group = IsObese))+
-  geom_bar(aes(y = after_stat(prop), fill = IsObese), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "IsObese")
-```
-
-```{r}
-#| echo: false
-#| label: tble-logodds
-#| message: false
-#| tbl-cap: "Summary of logistic regression model"
-
-
-
+ggplot(data = Project11, aes(x = IsObese, group = Year))+
+  geom_bar(aes(y = after_stat(prop), fill = Year), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "Year")
 ```
 
 # Formal Analysis {#sec-formal}
 
+We fit the logistic regression model,
+
 ```{r}
 #| echo: false
-Project11 <- Project11 |>
-  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese",1, 0))
-model <- glm(IsObese ~ Year, data = Project11, 
-             family = binomial(link = "logit"))
-
-model |>
-  summary()
-
-mod.coef.logodds <- model |>
-                      summary() |>
-                      coef()
-
-obese.logodds.lower <- (mod.coef.logodds["Year", "Estimate"] 
-                      - 1.96 * mod.coef.logodds["Year", "Std. Error"])
-obese.logodds.lower
-obese.logodds.upper <- (mod.coef.logodds["Year", "Estimate"] 
-                      + 1.96 * mod.coef.logodds["Year", "Std. Error"])
-obese.logodds.upper
-
-plot_model(model, show.values = TRUE, transform = NULL,
-           title = "Log-Odds (Obese)", show.p = FALSE)
+#| tbl-cap: "Estimates of the intercept and slope from the fitted logistic regression model"
+#| label: tbl-estimates
 
 Project11 <- Project11 |>
-  mutate(logodds.Obese = predict(model))
-Project11
+  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", 1, 0))
+
+model <- glm(IsObese ~ Year, data = Project11,
+                     family = binomial(link = "logit")) 
+Coefs <- round(coef(model), 3)
+tidy(model)[,c(1,2,3,5)] |>
+  gt() |>
+  fmt_number(decimals=4)
+
 ```
+
+
 
 # Conclusion {#sec-con}
