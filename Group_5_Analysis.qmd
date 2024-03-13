@@ -33,14 +33,13 @@ library(ggstats)
 ```{r}
 #| echo: false
 
-# Read in the data
 Project11 <- read.csv("~/Desktop/STATS4052/DAS-Group-5/DAProject11.csv")
 
-# Add a new column called IsObese based on the value of BMI group
 Project11 <- Project11 |>
   dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
 
 Project11$Year <- as.factor(Project11$Year)
+Project11$AgeGroup <- as.factor(Project11$AgeGroup)
 ```
 
 # Exploratory Analysis {#sec-exp}
