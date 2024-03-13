@@ -29,7 +29,7 @@ library(ggstats)
 ```
 
 # Introduction {#sec-intro}
-Obesity levels across Scotland are monitored with the Scottish Health Surveys. This includes socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Looking specifically at data between 2013 and 2016, in this report we will be looking at whether or not the prevalence of obesity has changed over this time period. Also looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status. 
+Obesity levels across Scotland are monitored as part of the Scottish Health Surveys. Within these surveys there is information on socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Using data gathered between 2013 and 2016, this report will look at whether or not the prevalence of obesity has changed over this time period. In addition looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status.
 
 ```{r}
 #| echo: false
