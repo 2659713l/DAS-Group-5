@@ -39,6 +39,8 @@ Project11 <- read.csv("~/Desktop/STATS4052/DAS-Group-5/DAProject11.csv")
 # Add a new column called IsObese based on the value of BMI group
 Project11 <- Project11 |>
   dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
+
+Project11$Year <- as.factor(Project11$Year)
 ```
 
 # Exploratory Analysis {#sec-exp}
@@ -89,5 +91,7 @@ tidy(model)[,c(1,2,3,5)] |>
   gt() |>
   fmt_number(decimals=4)
 ```
+
+baseline: Year 2013
 
 # Conclusion {#sec-con}
