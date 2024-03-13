@@ -29,7 +29,8 @@ library(ggstats)
 ```
 
 # Introduction {#sec-intro}
-Obesity levels across Scotland are monitored with the Scottish Health Surveys. This includes socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Looking specifically at data between 2013 and 2016, in this report we will be looking at whether or not the prevalence of obesity has changed over this time period. Also looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status. 
+
+Obesity levels across Scotland are monitored with the Scottish Health Surveys. This includes socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Looking specifically at data between 2013 and 2016, in this report we will be looking at whether or not the prevalence of obesity has changed over this time period. Also looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status.
 
 ```{r}
 #| echo: false
@@ -40,6 +41,7 @@ Project11 <- read.csv("DAProject11.csv")
 # Add a new column called IsObese based on the value of BMI group
 Project11 <- Project11 |>
   dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
+
 
 Project11$Year <- as.factor(Project11$Year)
 ```
@@ -73,6 +75,13 @@ ggplot(data = Project11, aes(x = IsObese, group = Year))+
   labs(y = "Proportion", fill = "Year")
 ```
 
+```{r}
+Project11$AgeGroup <- as.factor(Project11$AgeGroup)
+ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
+  geom_bar(aes(y = after_stat(prop), fill = AgeGroup), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "AgeGroup")
+```
+
 # Formal Analysis {#sec-formal}
 
 We fit the logistic regression model,
@@ -93,7 +102,5 @@ tidy(model)[,c(1,2,3,5)] |>
   fmt_number(decimals=4)
 
 ```
-
-
 
 # Conclusion {#sec-con}
