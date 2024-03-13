@@ -126,6 +126,46 @@ tidy(model)[,c(1,2,3,5)] |>
 baseline: Year 2013
 
 
+```{r}
+#| echo: false
+#| label: fig-barplot-agegroup
+#| message: false
+#| fig-cap: "Barplot of AgeGroup by Obesity"
+#| fig-width: 4
+#| fig-height: 3
+#| fig-align: center
+Project11$AgeGroup <- as.factor(Project11$AgeGroup)
+ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
+  geom_bar(aes(y = after_stat(prop), fill = AgeGroup), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "AgeGroup")
 ```
 
+
+```{r}
+#| echo: false
+#| label: fig-barplot-Employment
+#| message: false
+#| fig-cap: "Barplot of Employment by Obesity"
+#| fig-width: 4
+#| fig-height: 3
+#| fig-align: center
+Project11$Employment <- as.factor(Project11$Employment)
+ggplot(data = Project11, aes(x = IsObese, group = Employment))+
+  geom_bar(aes(y = after_stat(prop), fill = Employment), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "Employment")
+```
+
+```{r}
+#| echo: false
+#| label: fig-barplot-Sex
+#| message: false
+#| fig-cap: "Barplot of Sex by Obesity"
+#| fig-width: 4
+#| fig-height: 3
+#| fig-align: center
+Project11$Sex <- as.factor(Project11$Sex)
+ggplot(data = Project11, aes(x = IsObese, group = Sex))+
+  geom_bar(aes(y = after_stat(prop), fill = Sex), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "Sex")
+```
 # Conclusion {#sec-con}
