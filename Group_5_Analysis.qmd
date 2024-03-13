@@ -83,6 +83,7 @@ ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
   labs(y = "Proportion", fill = "AgeGroup")
 ```
 
+
 ```{r}
 #| echo: false
 Project11$Employment <- as.factor(Project11$Employment)
@@ -98,6 +99,7 @@ ggplot(data = Project11, aes(x = IsObese, group = Sex))+
   geom_bar(aes(y = after_stat(prop), fill = Sex), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "Sex")
 ```
+
 
 # Formal Analysis {#sec-formal}
 
