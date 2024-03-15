@@ -1,156 +1,224 @@
 ---
 title: "Group_5_Analysis"
-number-sections: true
 format: 
+  pdf: default
   html:
     embed-resources: true
     code-tools: true
-  pdf: default
+editor: visual
+number-sections: true
 editor_options: 
   chunk_output_type: console
 ---
 
 ```{r}
 #| echo: false
+# Alternative to calculating a binary variable for obese
+data <- read.csv("DAProject11.csv")
+
+ObesityStatus <- factor(data$BMIgroup == "Obese", levels = c(FALSE, TRUE), labels = c("Not Obese", "Obese"))
+
+data <- cbind(data, ObesityStatus)
+```
+
+```{r}
+#| echo: false
 #| warning: false
 #| message: false
 
-library(dplyr)
+library(dplyr)             
 library(ggplot2)
-library(tidyverse)
-library(gt)
-library(MASS)
-library(patchwork)
-library(gapminder)
 library(janitor)
+library(scales)
 library(tidymodels)
-library(moderndive)
-library(ggstats)
 library(sjPlot)
 ```
 
 # Introduction {#sec-intro}
 
-Obesity levels across Scotland are monitored with the Scottish Health Surveys. This includes socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Looking specifically at data between 2013 and 2016, in this report we will be looking at whether or not the prevalence of obesity has changed over this time period. Also looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status.
-
-```{r}
-#| echo: false
-
-Project11 <- read.csv("DAProject11.csv")
-
-Project11 <- Project11 |>
-  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
-
-Project11$Year <- as.factor(Project11$Year)
-Project11$Employment <- as.factor(Project11$Employment)
-Project11$AgeGroup <- as.factor(Project11$AgeGroup)
-Project11$Sex <- as.factor(Project11$Sex)
-```
-
 # Exploratory Analysis {#sec-exp}
 
 ```{r}
-#| echo: false
-#| eval: false
 
-Project11 |>
-  tabyl(Year,IsObese) |>
+#| echo: false
+
+# Select the columns of interest
+data.year <- data |>
+  select(ObesityStatus, Year)
+
+data.year |> 
+  summary()
+
+ggplot(data.year, aes(x = Year, group = ObesityStatus)) +
+  geom_bar(aes(y = after_stat(prop), fill = ObesityStatus), stat = "count", 
+           position = "dodge") +
+  labs(y = "Proportion", fill = "ObesityStatus")
+```
+
+```{r}
+#| echo: false 
+# Table of proportions by year
+data.year |>
+  tabyl(ObesityStatus, Year) |>
   adorn_percentages() |>
   adorn_pct_formatting() |>
-  adorn_ns() |>
-  gt()
-```
-
-```{r}
-#| echo: false
-#| label: fig-barYear
-#| message: false
-#| fig-cap: "Barplot of Obesity by Year"
-#| fig-width: 4
-#| fig-height: 3
-#| fig-align: center
-
-ggplot(data = Project11, aes(x = IsObese, group = Year))+
-  geom_bar(aes(y = after_stat(prop), fill = Year), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "Year")
-```
-
-```{r}
-#| echo: false
-#| label: fig-barAge
-#| message: false
-#| fig-cap: "Barplot of Obesity by AgeGroup"
-#| fig-width: 4
-#| fig-height: 3
-#| fig-align: center
-
-ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
-  geom_bar(aes(y = after_stat(prop), fill = AgeGroup), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "AgeGroup")
-```
-
-```{r}
-#| echo: false
-#| label: fig-barSex
-#| message: false
-#| fig-cap: "Barplot of Obesity by Sex"
-#| fig-width: 4
-#| fig-height: 3
-#| fig-align: center
-
-ggplot(data = Project11, aes(x = IsObese, group = Sex))+
-  geom_bar(aes(y = after_stat(prop), fill = Sex), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "Sex")
-```
-
-```{r}
-#| echo: false
-#| label: fig-barEmploy
-#| message: false
-#| fig-cap: "Barplot of Obesity by Employment"
-#| fig-width: 8
-#| fig-height: 4
-#| fig-align: center
-
-ggplot(data = Project11, aes(x = IsObese, group = Employment))+
-  geom_bar(aes(y = after_stat(prop), fill = Employment), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "Employment")
+  adorn_ns() # To show original count
 ```
 
 # Formal Analysis {#sec-formal}
 
-We fit the logistic regression model,
+The logistic regression model is given by
 
 ```{r}
 #| echo: false
-#| tbl-cap: "Estimates of the intercept and slope from the fitted logistic regression model"
-#| label: tbl-estimates
 
-Project11 <- Project11 |>
-  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", 1, 0))
+model <- logistic_reg() |> 
+  set_engine("glm")
 
-model <- glm(IsObese ~ Year, data = Project11,
-                     family = binomial(link = "logit")) 
-Coefs <- round(coef(model), 3)
-tidy(model)[,c(1,2,3,5)] |>
-  gt() |>
-  fmt_number(decimals=4)
+model.year <- model |> 
+  fit(ObesityStatus ~ Year, data = data.year) |>
+  extract_fit_engine()
+
+
+summary(model.year)
+
 ```
 
-baseline: Year 2013
+The baseline category for our binary response is `NotObese`. Also, the baseline category for our explanatory variable is `2013`.
+
+This means that estimates from the logistic regression model are for a change on the **log-odds** scale for `Obese` ($p=\text{Prob(Obese)}$) in comparison to the response category `NotObese` . That is
+
+$$
+\ln{(\frac{p}{1-p})} = \alpha + \beta \cdot \text{Year} = -12.08 + 0.006 \cdot \mathbb{I}_{\text{Year}}(\text{not 2013})
+$$where $\mathbb{I}_{\text{Year}}(\text{not 2013})$ is an indicator function. Hence the log-odds of being obese increase by $0.006$ if they are in the year group `2013`. The 95% confidence interval is given as
 
 ```{r}
 #| echo: false
-#| label: fig-LogOdds
+
+mod.coef.logodds <- model.year |>
+  summary() |>
+  coef()
+
+obese.logodds.lower <- (mod.coef.logodds["Year", "Estimate"] 
+                      - 1.96 * mod.coef.logodds["Year", "Std. Error"])
+obese.logodds.upper <- (mod.coef.logodds["Year", "Estimate"] 
+                      + 1.96 * mod.coef.logodds["Year", "Std. Error"])
+
+```
+
+$$
+(-0.027, 0.038)
+$$
+
+Hence the point estimate for the log-odds is $0.006$ which has a corresponding 95% confidence interval $(-0.027, 0.038)$. Notice that this interval does not include $1$, so the odd ratio is statistically significant. Graphically, this looks like
+
+```{r}
+#| echo: false
+#| warning: false
 #| message: false
-#| fig-cap: "The log-odds for Obesity by Year"
-#| fig-width: 4
-#| fig-height: 3
-#| fig-align: center
+plot_model(model.year, show.values = TRUE, transform = NULL, 
+           title = "Log-Odds (Not Obese)", show.p = FALSE)
+```
 
-plot_model(model, show.values = TRUE, transform = NULL,
-           title = "Log-Odds (Year)", show.p = FALSE)
+On the **odds** scale the regression coefficients are given by
 
+```{r}
+#| echo: false
+
+model.year |>
+  coef() |>
+    exp()
+```
+
+The (Intercept) gives us the odds of being not obese in 2013, that is $5.671 \times 10^{-0.6}$ (the indicator function is zero in that case). The odds of being not obese given that they are not in 2013 is $1.001$ times greater than the odds if they were in the Obese group.
+
+```{r}
+#| echo: false
+
+# the number of not obese
+pmin <- data.year |>
+  filter(ObesityStatus == "Not Obese") |>
+  summarize(n()) |>
+  pull()
+
+# the number of not obese people in 2013
+pmin.notobese <- data.year |>
+  filter(ObesityStatus == "Not Obese", Year == "2013") |>
+  summarize(n()) |>
+  pull()
+
+# the proportion/probability of not obese people in 2013
+prob.notobese.2013 <- pmin.notobese / pmin
+odds.notobese.2013 <- prob.notobese.2013 / (1 - prob.notobese.2013)
+
+# the number of people who are obese
+p.obese <- data.year |>
+  filter(ObesityStatus == "Obese") |>
+  summarize(n()) |>
+  pull()
+
+# the number of obese people in 2013
+p.obese.2013 <- data.year |>
+  filter(ObesityStatus == "Obese", Year == "2013") |>
+  summarize(n()) |>
+  pull()
+
+# the proportion/probability of being obese in 2013
+prob.obese.2013 <- p.obese.2013 / p.obese
+odds.obese.2013 <- prob.obese.2013 / (1 - prob.obese.2013)
+odds.ratio.obese <- odds.obese.2013 / odds.obese.2013
+```
+
+We can obtain a 95% confidence interval for the odds by simply exponentiating the lower and upper bounds of the log-odds interval:
+
+```{r}
+#| echo: false
+
+obese.odds.lower <- exp(obese.logodds.lower)
+
+
+obese.odds.upper <- exp(obese.logodds.upper)
+```
+
+$$
+(0.974,1.039)
+$$
+
+Hence the point estimate for the odds-ratio is $1.006$, which has a corresponding 95% confidence interval of $(0.973,1.039)$. Graphically, this looks like
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Graph this confidence interval
+plot_model(model.year, show.values = TRUE,
+           title = "Odds (Being not obese)", show.p = FALSE)
+```
+
+The probabilities of a person being not obese given that they are in 2013 and the other years are
+
+```{r}
+#| echo: false
+
+plogis(mod.coef.logodds["(Intercept)", "Estimate"])
+
+ plogis(mod.coef.logodds["(Intercept)", "Estimate"] +
+         mod.coef.logodds["Year", "Estimate"])
+```
+
+```{r}
+#| echo: false
+
+data.year <- data.year |>
+  mutate(probs.2013 = fitted(model.year)) 
+```
+
+```{r}
+#| echo: false
+
+plot_model(model.year, type = "pred", terms = "Year[all]", 
+            axis.title = c("Year", "Prob. of Person Not being Obese", title               = ""))
 ```
 
 # Conclusion {#sec-con}
