@@ -26,33 +26,32 @@ library(janitor)
 library(tidymodels)
 library(moderndive)
 library(ggstats)
+library(sjPlot)
 ```
 
 # Introduction {#sec-intro}
 
-Obesity levels across Scotland are monitored with the Scottish Health Surveys. This includes socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Looking specifically at data between 2013 and 2016, in this report we will be looking at whether or not the prevalence of obesity has changed over this time period. Also looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status. 
-
+Obesity levels across Scotland are monitored with the Scottish Health Surveys. This includes socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Looking specifically at data between 2013 and 2016, in this report we will be looking at whether or not the prevalence of obesity has changed over this time period. Also looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status.
 
 ```{r}
 #| echo: false
 
-# Read in the data
 Project11 <- read.csv("DAProject11.csv")
 
-# Add a new column called IsObese based on the value of BMI group
 Project11 <- Project11 |>
   dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
 
-
 Project11$Year <- as.factor(Project11$Year)
+Project11$Employment <- as.factor(Project11$Employment)
+Project11$AgeGroup <- as.factor(Project11$AgeGroup)
+Project11$Sex <- as.factor(Project11$Sex)
 ```
 
 # Exploratory Analysis {#sec-exp}
 
 ```{r}
 #| echo: false
-#| label: tbl-proportion
-#| tbl-cap: "Proportion of obseity by year"
+#| eval: false
 
 Project11 |>
   tabyl(Year,IsObese) |>
@@ -64,9 +63,9 @@ Project11 |>
 
 ```{r}
 #| echo: false
-#| label: fig-barplot
+#| label: fig-barYear
 #| message: false
-#| fig-cap: "Barplot of year by Obesity"
+#| fig-cap: "Barplot of Obesity by Year"
 #| fig-width: 4
 #| fig-height: 3
 #| fig-align: center
@@ -74,6 +73,48 @@ Project11 |>
 ggplot(data = Project11, aes(x = IsObese, group = Year))+
   geom_bar(aes(y = after_stat(prop), fill = Year), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "Year")
+```
+
+```{r}
+#| echo: false
+#| label: fig-barAge
+#| message: false
+#| fig-cap: "Barplot of Obesity by AgeGroup"
+#| fig-width: 4
+#| fig-height: 3
+#| fig-align: center
+
+ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
+  geom_bar(aes(y = after_stat(prop), fill = AgeGroup), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "AgeGroup")
+```
+
+```{r}
+#| echo: false
+#| label: fig-barSex
+#| message: false
+#| fig-cap: "Barplot of Obesity by Sex"
+#| fig-width: 4
+#| fig-height: 3
+#| fig-align: center
+
+ggplot(data = Project11, aes(x = IsObese, group = Sex))+
+  geom_bar(aes(y = after_stat(prop), fill = Sex), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "Sex")
+```
+
+```{r}
+#| echo: false
+#| label: fig-barEmploy
+#| message: false
+#| fig-cap: "Barplot of Obesity by Employment"
+#| fig-width: 8
+#| fig-height: 4
+#| fig-align: center
+
+ggplot(data = Project11, aes(x = IsObese, group = Employment))+
+  geom_bar(aes(y = after_stat(prop), fill = Employment), stat = "count", position = "dodge") +
+  labs(y = "Proportion", fill = "Employment")
 ```
 
 # Formal Analysis {#sec-formal}
@@ -98,45 +139,18 @@ tidy(model)[,c(1,2,3,5)] |>
 
 baseline: Year 2013
 
-
 ```{r}
 #| echo: false
-#| label: fig-barplot-agegroup
+#| label: fig-LogOdds
 #| message: false
-#| fig-cap: "Barplot of AgeGroup by Obesity"
+#| fig-cap: "The log-odds for Obesity by Year"
 #| fig-width: 4
 #| fig-height: 3
 #| fig-align: center
-Project11$AgeGroup <- as.factor(Project11$AgeGroup)
-ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
-  geom_bar(aes(y = after_stat(prop), fill = AgeGroup), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "AgeGroup")
+
+plot_model(model, show.values = TRUE, transform = NULL,
+           title = "Log-Odds (Year)", show.p = FALSE)
+
 ```
 
-
-```{r}
-#| echo: false
-#| label: fig-barplot-Employment
-#| message: false
-#| fig-cap: "Barplot of Employment by Obesity"
-#| fig-align: center
-Project11$Employment <- as.factor(Project11$Employment)
-ggplot(data = Project11, aes(x = IsObese, group = Employment))+
-  geom_bar(aes(y = after_stat(prop), fill = Employment), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "Employment")
-```
-
-```{r}
-#| echo: false
-#| label: fig-barplot-Sex
-#| message: false
-#| fig-cap: "Barplot of Sex by Obesity"
-#| fig-width: 4
-#| fig-height: 3
-#| fig-align: center
-Project11$Sex <- as.factor(Project11$Sex)
-ggplot(data = Project11, aes(x = IsObese, group = Sex))+
-  geom_bar(aes(y = after_stat(prop), fill = Sex), stat = "count", position = "dodge") +
-  labs(y = "Proportion", fill = "Sex")
-```
 # Conclusion {#sec-con}
