@@ -1,97 +1,50 @@
 ---
 title: "Group_5_Analysis"
-format: html
-editor: visual
-number-sections: true
 format: 
+  pdf: default
   html:
     embed-resources: true
     code-tools: true
-  pdf: default
+editor: visual
+number-sections: true
 editor_options: 
   chunk_output_type: console
 ---
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-## 
-=======
->>>>>>> Stashed changes
-
-```{r}
-#| echo: false
-=======
-```{r}
-#| echo: false
-
-# Install and load the required libraries
-install.packages("dplyr")
-library(dplyr)             
->>>>>>> Stashed changes
-
-# Install and load the required libraries
-install.packages("dplyr")
-library(dplyr)             
-
-# Read in the data
-data <- read.csv("DAProject11.csv")
-
-# Add a new column called IsObese based on the value of BMI group
-data <- data %>%
-  mutate(IsObese = case_when(
-    BMIgroup == "Obese" ~ 1,   # Assign 1 to 'obese'
-    TRUE ~ 0                    # Assign 0 to every other category
-  ))
-```
-
-<<<<<<< Updated upstream
 ```{r}
 #| echo: false
 # Alternative to calculating a binary variable for obese
 data <- read.csv("DAProject11.csv")
 
 ObesityStatus <- factor(data$BMIgroup == "Obese", levels = c(FALSE, TRUE), labels = c("Not Obese", "Obese"))
-ObesityStatus
-levels(data$ObesityStatus)
 
 data <- cbind(data, ObesityStatus)
-
 ```
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
 
-<<<<<<< Updated upstream
-=======
-=======
+library(dplyr)             
+library(ggplot2)
+library(janitor)
+library(scales)
+library(tidymodels)
+library(sjPlot)
+```
 
->>>>>>> Stashed changes
-=======
-
->>>>>>> Stashed changes
 # Introduction {#sec-intro}
 
-
 # Exploratory Analysis {#sec-exp}
+
 ```{r}
-<<<<<<< Updated upstream
+
 #| echo: false
 
-attach(data.obese)
-ggplot(data = data.obese, aes(x = ObesityStatus, y = Year, fill = ObesityStatus)) +
-  geom_boxplot() +
-  labs(x = "IsObese", y = "Age Group") +
-  theme(legend.position = "none")
-=======
 # Select the columns of interest
 data.year <- data |>
   select(ObesityStatus, Year)
-
-# Table of proportions by year
-data.year |>
-  tabyl(ObesityStatus, Year) |>
-  adorn_percentages() |>
-  adorn_pct_formatting() |>
-  adorn_ns() # To show original count
 
 data.year |> 
   summary()
@@ -100,128 +53,87 @@ ggplot(data.year, aes(x = Year, group = ObesityStatus)) +
   geom_bar(aes(y = after_stat(prop), fill = ObesityStatus), stat = "count", 
            position = "dodge") +
   labs(y = "Proportion", fill = "ObesityStatus")
->>>>>>> Stashed changes
 ```
 
+```{r}
+#| echo: false 
+# Table of proportions by year
+data.year |>
+  tabyl(ObesityStatus, Year) |>
+  adorn_percentages() |>
+  adorn_pct_formatting() |>
+  adorn_ns() # To show original count
+```
 
 # Formal Analysis {#sec-formal}
+
+The logistic regression model is given by
+
 ```{r}
 #| echo: false
-<<<<<<< Updated upstream
+
 model <- logistic_reg() |> 
   set_engine("glm")
-model <- model |> 
-  fit(ObesityStatus ~ Year, data = data.obese) |>
+
+model.year <- model |> 
+  fit(ObesityStatus ~ Year, data = data.year) |>
   extract_fit_engine()
 
-summary(model)
 
+summary(model.year)
 
-mod.coef.logodds <- model |>
+```
+
+The baseline category for our binary response is `NotObese`. Also, the baseline category for our explanatory variable is `2013`.
+
+This means that estimates from the logistic regression model are for a change on the **log-odds** scale for `Obese` ($p=\text{Prob(Obese)}$) in comparison to the response category `NotObese` . That is
+
+$$
+\ln{(\frac{p}{1-p})} = \alpha + \beta \cdot \text{Year} = -12.08 + 0.006 \cdot \mathbb{I}_{\text{Year}}(\text{not 2013})
+$$where $\mathbb{I}_{\text{Year}}(\text{not 2013})$ is an indicator function. Hence the log-odds of being obese increase by $0.006$ if they are in the year group `2013`. The 95% confidence interval is given as
+
+```{r}
+#| echo: false
+
+mod.coef.logodds <- model.year |>
   summary() |>
   coef()
 
 obese.logodds.lower <- (mod.coef.logodds["Year", "Estimate"] 
                       - 1.96 * mod.coef.logodds["Year", "Std. Error"])
-obese.logodds.lower
 obese.logodds.upper <- (mod.coef.logodds["Year", "Estimate"] 
                       + 1.96 * mod.coef.logodds["Year", "Std. Error"])
-obese.logodds.upper
 
-plot_model(model, show.values = TRUE, transform = NULL,
-           title = "Log-Odds (Obese)", show.p = FALSE)
-
-data.obese <- data.obese |>
-  mutate(logodds.Obese = predict(model))
-data.obese
 ```
+
+$$
+(-0.027, 0.038)
+$$
+
+Hence the point estimate for the log-odds is $0.006$ which has a corresponding 95% confidence interval $(-0.027, 0.038)$. Notice that this interval does not include $1$, so the odd ratio is statistically significant. Graphically, this looks like
 
 ```{r}
 #| echo: false
-
-# Odds
-model |>
-  coef() |>
-  exp()
-
-obese.odds.lower <- exp(age.logodds.lower)
-obese.odds.lower
-obese.odds.upper <- exp(age.logodds.upper)
-obese.odds.upper
-
-plot_model(model, show.values = TRUE,
-           title = "Odds (Obese)", show.p = FALSE, axis.lim = c(1, 1.5))
-
-data.obese <- data.obese |>
-  mutate(odds.obese = exp(logodds.obese))
-```
-
-```{r}
-#| echo: false
-
-# Probabilities
-# Predictions for 2016
-plogis(mod.coef.logodds["(Intercept)", "Estimate"] 
-       + mod.coef.logodds["Year", "Estimate"] * 2016)
-
-data.obese <- data.obese |>
-  mutate(probs.obese = fitted(model))
-
-ggplot(data = data.obese, aes(x = Year, y = probs.obese)) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE) +
-  labs(x = "Year", y = "Probability of being obese")
-
-plot_model(model, type = "pred", title = "", terms="Year [all]", axis.title = c("Age", "Prob. of being obese"))
-
-```
-
-# Conclusion {#sec-con}
->>>>>>> main
-=======
-# Formal Analysis- Log-Odds ----------------------------------------------------
-
-Year <- as.factor(data.year$Year)
-levels(Year)
-
-# The logistic model is given by
-model.year <- logistic_reg() |> 
-  set_engine("glm") |> 
-  fit(ObesityStatus ~ Year, data = data.year) |>
-  extract_fit_engine()
-
-model.year |>
-  summary()
-
-mod.year.coef.logodds <- model.year |>
-  summary() |>
-  coef()
-
-mod.year.coef.logodds
-
-year.logodds.upper <- (mod.year.coef.logodds["Year", "Estimate"] 
-                       + 1.96 *
-                         mod.year.coef.logodds["Year", "Std. Error"])
-year.logodds.upper
-
-
-year.logodds.lower <- (mod.year.coef.logodds["Year", "Estimate"] 
-                       - 1.96 *
-                         mod.year.coef.logodds["Year", "Std. Error"])
-year.logodds.lower
-
+#| warning: false
+#| message: false
 plot_model(model.year, show.values = TRUE, transform = NULL, 
-           title = "Log-Odds (2013)", show.p = FALSE)
+           title = "Log-Odds (Not Obese)", show.p = FALSE)
+```
 
-# Add the estimates if the log-odds to our data set
-data.year <- data.year |>
-  mutate(logodds.2013 = predict(model.year))
+On the **odds** scale the regression coefficients are given by
 
-# Formal Analysis - Odds -------------------------------------------------------
+```{r}
+#| echo: false
 
-# Take exponential of log-odds coefficients
 model.year |>
   coef() |>
-  exp()
+    exp()
+```
+
+The (Intercept) gives us the odds of being not obese in 2013, that is $5.671 \times 10^{-0.6}$ (the indicator function is zero in that case). The odds of being not obese given that they are not in 2013 is $1.001$ times greater than the odds if they were in the Obese group.
+
+```{r}
+#| echo: false
 
 # the number of not obese
 pmin <- data.year |>
@@ -238,7 +150,6 @@ pmin.notobese <- data.year |>
 # the proportion/probability of not obese people in 2013
 prob.notobese.2013 <- pmin.notobese / pmin
 odds.notobese.2013 <- prob.notobese.2013 / (1 - prob.notobese.2013)
-odds.notobese.2013  
 
 # the number of people who are obese
 p.obese <- data.year |>
@@ -256,37 +167,58 @@ p.obese.2013 <- data.year |>
 prob.obese.2013 <- p.obese.2013 / p.obese
 odds.obese.2013 <- prob.obese.2013 / (1 - prob.obese.2013)
 odds.ratio.obese <- odds.obese.2013 / odds.obese.2013
+```
 
-# 95% confidence interval
+We can obtain a 95% confidence interval for the odds by simply exponentiating the lower and upper bounds of the log-odds interval:
 
-year.odds.lower <- exp(year.logodds.lower)
+```{r}
+#| echo: false
 
-year.odds.upper <- exp(year.logodds.upper)
+obese.odds.lower <- exp(obese.logodds.lower)
+
+
+obese.odds.upper <- exp(obese.logodds.upper)
+```
+
+$$
+(0.974,1.039)
+$$
+
+Hence the point estimate for the odds-ratio is $1.006$, which has a corresponding 95% confidence interval of $(0.973,1.039)$. Graphically, this looks like
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
 
 # Graph this confidence interval
 plot_model(model.year, show.values = TRUE,
            title = "Odds (Being not obese)", show.p = FALSE)
-
-# Add the estimates to the data set
-data.year <- data.year |>
-  mutate(odds.2013 = exp(logodds.2013))
-
-# Formal analysis - Probabilities -----------------------------------------------
-
-plogis(mod.year.coef.logodds["(Intercept)", "Estimate"])
-
-plogis(mod.year.coef.logodds["(Intercept)", "Estimate"] +
-         mod.year.coef.logodds["Year", "Estimate"])
-
-data.year <- data.year |>
-  mutate(probs.2013 = fitted(model.year))
-
-plot_model(model.year, type = "pred", terms = "ObesityStatus" )
-
-
 ```
 
+The probabilities of a person being not obese given that they are in 2013 and the other years are
+
+```{r}
+#| echo: false
+
+plogis(mod.coef.logodds["(Intercept)", "Estimate"])
+
+ plogis(mod.coef.logodds["(Intercept)", "Estimate"] +
+         mod.coef.logodds["Year", "Estimate"])
+```
+
+```{r}
+#| echo: false
+
+data.year <- data.year |>
+  mutate(probs.2013 = fitted(model.year)) 
+```
+
+```{r}
+#| echo: false
+
+plot_model(model.year, type = "pred", terms = "Year[all]", 
+            axis.title = c("Year", "Prob. of Person Not being Obese", title               = ""))
+```
 
 # Conclusion {#sec-con}
-
->>>>>>> Stashed changes
