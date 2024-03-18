@@ -49,6 +49,8 @@ Project11$Sex <- as.factor(Project11$Sex)
 
 # Exploratory Analysis {#sec-exp}
 
+We begin with creating a new binary response variable based on the BMIgroup variable for obesity classification, which is divided into "Obesity" and "Not Obesity". Then, we draw a barplot @fig-barYear to show how the prevalence of obesity in Scotland changes over years. Here we can see that both obesity and non-obesity barely changed between 2013 and 2016. The proportion of obesity was the highest in 2015 and the lowest in 2014, but the difference was not significant, with only a 0.4% fluctuation.
+
 ```{r}
 #| echo: false
 #| eval: false
@@ -75,6 +77,8 @@ ggplot(data = Project11, aes(x = IsObese, group = Year))+
   labs(y = "Proportion", fill = "Year")
 ```
 
+To further explore whether the prevalence of obesity differs by age, gender, and employment factors, we draw different barplots on obesity by age group, sex, and employment, respectively. @fig-barAge displays the proportion of obesity in different age groups. The 16-24 age group has the lowest obesity proportion, while the 65-74 age group has the highest proportion. We can see that the proportion of obesity gradually increases from the 16-24 age group to the 65-74 age group, but the obesity prevalence among the elderly over 75 years old group is lower than that in the previous age group.
+
 ```{r}
 #| echo: false
 #| label: fig-barAge
@@ -89,6 +93,8 @@ ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
   labs(y = "Proportion", fill = "AgeGroup")
 ```
 
+@fig-barSex illustrates the obesity proportion in females and males, respectively. There does not appear to be a significant difference in obesity rates between females and males, although the prevalence among females is slightly higher than that among males.
+
 ```{r}
 #| echo: false
 #| label: fig-barSex
@@ -102,6 +108,8 @@ ggplot(data = Project11, aes(x = IsObese, group = Sex))+
   geom_bar(aes(y = after_stat(prop), fill = Sex), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "Sex")
 ```
+
+@fig-barEmploy displays that people with full-time education have the lowest prevalence of obesity, while people who are permanently unable to work have the highest proportion. It seems likely that employment increases the prevalence of obesity, but a person is more likely to be obese if they are permanently unable to find a job.
 
 ```{r}
 #| echo: false
@@ -119,7 +127,23 @@ ggplot(data = Project11, aes(x = IsObese, group = Employment))+
 
 # Formal Analysis {#sec-formal}
 
-We fit the logistic regression model,
+We fit the logistic regression model for obesity prevalence from 2013 to 2016,
+
+$$
+\mbox{ln}(\frac{p_i}{1-p_i}) = \alpha + \beta_{\mbox{Year}} \cdot \mathbb{I}_{\mbox{Year}}(x)
+$$
+
+where
+
+-   $p$ is the probability of obesity
+
+-   $1-p$ is the probability of not obesity
+
+-   $\alpha$ is the intercept of the regression line for the baseline Year (2013)
+
+-   $\beta_{\mbox{Year}}$ the additional term added to $\alpha$ to get the intercept of the regression line for the specified Year
+
+-   $\mathbb{I}_{\mbox{Year}}(x)$ is an indicator function indicating the chosen Year.
 
 ```{r}
 #| echo: false
@@ -136,8 +160,6 @@ tidy(model)[,c(1,2,3,5)] |>
   gt() |>
   fmt_number(decimals=4)
 ```
-
-baseline: Year 2013
 
 ```{r}
 #| echo: false
