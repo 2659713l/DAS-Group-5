@@ -37,7 +37,7 @@ library(sjPlot)
 Project11 <- read.csv("DAProject11.csv")
 
 Project11 <- Project11 |>
-  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
+  dplyr::mutate(ObesityStatus = ifelse(BMIgroup == "Obese", "Obesity", "Not Obesity"))
 
 Project11$Year <- as.factor(Project11$Year)
 Project11$Employment <- as.factor(Project11$Employment)
@@ -54,7 +54,7 @@ We begin with creating a new binary response variable based on the BMIgroup vari
 #| eval: false
 
 Project11 |>
-  tabyl(Year,IsObese) |>
+  tabyl(Year,ObesityStatus) |>
   adorn_percentages() |>
   adorn_pct_formatting() |>
   adorn_ns() |>
@@ -70,7 +70,7 @@ Project11 |>
 #| fig-height: 3
 #| fig-align: center
 
-ggplot(data = Project11, aes(x = IsObese, group = Year))+
+ggplot(data = Project11, aes(x = ObesityStatus, group = Year))+
   geom_bar(aes(y = after_stat(prop), fill = Year), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "Year")
 ```
@@ -86,7 +86,7 @@ To further explore whether the prevalence of obesity differs by age, gender, and
 #| fig-height: 3
 #| fig-align: center
 
-ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
+ggplot(data = Project11, aes(x = ObesityStatus, group = AgeGroup))+
   geom_bar(aes(y = after_stat(prop), fill = AgeGroup), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "AgeGroup")
 ```
@@ -102,7 +102,7 @@ ggplot(data = Project11, aes(x = IsObese, group = AgeGroup))+
 #| fig-height: 3
 #| fig-align: center
 
-ggplot(data = Project11, aes(x = IsObese, group = Sex))+
+ggplot(data = Project11, aes(x = ObesityStatus, group = Sex))+
   geom_bar(aes(y = after_stat(prop), fill = Sex), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "Sex")
 ```
@@ -118,7 +118,7 @@ ggplot(data = Project11, aes(x = IsObese, group = Sex))+
 #| fig-height: 4
 #| fig-align: center
 
-ggplot(data = Project11, aes(x = IsObese, group = Employment))+
+ggplot(data = Project11, aes(x = ObesityStatus, group = Employment))+
   geom_bar(aes(y = after_stat(prop), fill = Employment), stat = "count", position = "dodge") +
   labs(y = "Proportion", fill = "Employment")
 ```
@@ -149,9 +149,9 @@ where
 #| label: tbl-estimates
 
 Project11 <- Project11 |>
-  dplyr::mutate(IsObese = ifelse(BMIgroup == "Obese", 1, 0))
+  dplyr::mutate(ObesityStatus = ifelse(BMIgroup == "Obese", 1, 0))
 
-model <- glm(IsObese ~ Year, data = Project11,
+model <- glm(ObesityStatus ~ Year, data = Project11,
                      family = binomial(link = "logit")) 
 Coefs <- round(coef(model), 3)
 tidy(model)[,c(1,2,3,5)] |>
@@ -172,6 +172,57 @@ library(sjPlot)
 plot_model(model, show.values = TRUE, transform = NULL,
            title = "Log-Odds (Year)", show.p = FALSE)
 
+```
+
+Then we fit the logistic regression model for the explanatory variables, age group, sex, and employment,
+
+$$
+\mbox{ln}(\frac{p_i}{1-p_i}) = \alpha + \beta_{\mbox{AgeGroup}} \cdot \mathbb{I}_{\mbox{AgeGroup}}(x) + \beta_{\mbox{Sex}} \cdot \mathbb{I}_{\mbox{Sex}}(x) + \beta_{\mbox{Employment}} \cdot \mathbb{I}_{\mbox{Employment}}(x)
+$$
+
+where
+
+-   $p$ is the probability of obesity
+
+-   $1-p$ is the probability of not obesity
+
+-   $\alpha$ is the intercept of the regression line for the baseline AgeGroup (16-24), Sex (Female), Employment (Doing something else)
+
+-   $\beta_{\mbox{AgeGroup}}$ the additional term added to $\alpha$ to get the intercept of the regression line for the specified AgeGroup
+
+-   $\beta_{\mbox{Sex}}$ the additional term added to $\alpha$ to get the intercept of the regression line for the specified Sex
+
+-   $\beta_{\mbox{Employment}}$ the additional term added to $\alpha$ to get the intercept of the regression line for the specified Employment
+
+-   $\mathbb{I}_{\mbox{AgeGroup}}(x)$ is an indicator function indicating the chosen AgeGroup.
+
+-   $\mathbb{I}_{\mbox{Sex}}(x)$ is an indicator function indicating the chosen Sex.
+
+-   $\mathbb{I}_{\mbox{Employment}}(x)$ is an indicator function indicating the chosen Employment.
+
+```{r}
+#| echo: false
+#| tbl-cap: "Coefficients from the fitted logistic regression model with all explanatory variables"
+#| label: tbl-coefficients
+
+model <- glm(ObesityStatus ~ AgeGroup + Sex + Employment, data = Project11,
+                     family = binomial(link = "logit")) 
+Coefs <- round(coef(model), 3)
+tidy(model)[,c(1,2,3,5)] |>
+  gt() |>
+  fmt_number(decimals=4)
+```
+
+```{r}
+#| echo: false
+#| label: fig-Odds
+#| message: false
+#| fig-cap: "Log-Odds for age group, sex, employment"
+#| fig-align: center
+
+library(sjPlot)
+plot_model(model, show.values = TRUE, transform = NULL,
+           title = "", show.p = FALSE)
 ```
 
 # Conclusion {#sec-con}
