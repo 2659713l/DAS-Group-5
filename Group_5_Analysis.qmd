@@ -31,6 +31,8 @@ library(sjPlot)
 
 # Introduction {#sec-intro}
 
+@sec-exp shows the exploratory analysis of Scottish Health Survey data, and explores how the prevalence of obesity in Scotland changes over years, and whether obesity prevalence differs by age, gender and employment factors. @sec-formal contains the results of the fitted logistic regression models of Scottish Health Survey data, and analysis for such models based on the questions of interest. Then, we make the overall conclusion in @sec-con.
+
 ```{r}
 #| echo: false
 
@@ -143,6 +145,8 @@ where
 
 -   $\mathbb{I}_{\mbox{Year}}(x)$ is an indicator function indicating the chosen Year.
 
+Hence, from @tbl-estimates we can see that the coefficient for $\alpha$ is -0.8330, and the coefficient $\beta_{\mbox{Year}}$ has different values, -0.0556, 0.0163, 0.0111 in year 2014, 2015, 2016, respectively. However, the p-value for all the $\beta_{\mbox{Year}}$ are larger than 0.05, then it can be concluded that there is not statistically significant at the 5% level.
+
 ```{r}
 #| echo: false
 #| tbl-cap: "Estimates of the intercept and slope from the fitted logistic regression model"
@@ -158,6 +162,8 @@ tidy(model)[,c(1,2,3,5)] |>
   gt() |>
   fmt_number(decimals=4)
 ```
+
+Also, we can plot the log-odds @fig-LogOdds for obesity by year to display 95% confidence interval graphically. The associated 95% confidence interval for thelog-odds includes 0 for each year, consequently the log-odds ratio is not statistically significant. Therefore, there is no evidence to show the prevalence of obesity in Scotland changed over the given years.
 
 ```{r}
 #| echo: false
