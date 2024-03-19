@@ -164,8 +164,8 @@ tidy(model)[,c(1,2,3,5)] |>
 #| label: fig-LogOdds
 #| message: false
 #| fig-cap: "The log-odds for Obesity by Year"
-#| fig-width: 3
-#| fig-height: 2
+#| fig-width: 4
+#| fig-height: 2.5
 #| fig-align: center
 
 plot_model(model, show.values = TRUE, transform = NULL,
@@ -217,8 +217,8 @@ tidy(model)[,c(1,2,3,5)] |>
 #| label: fig-Odds
 #| message: false
 #| fig-cap: "Log-Odds for age group, sex, employment"
-#| fig-width: 8
-#| fig-height: 5
+#| fig-width: 9
+#| fig-height: 6
 #| fig-align: center
 
 plot_model(model, show.values = TRUE, transform = NULL,
