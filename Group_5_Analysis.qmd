@@ -31,9 +31,11 @@ library(sjPlot)
 
 # Introduction {#sec-intro}
 
+
 Obesity levels across Scotland are monitored as part of the Scottish Health Surveys. Within these surveys there is information on socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Using data gathered between 2013 and 2016, this report will look at whether or not the prevalence of obesity has changed over this time period. In addition looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status.
 
 @sec-exp shows the exploratory analysis of Scottish Health Survey data, and explores how the prevalence of obesity in Scotland changes over years, and whether obesity prevalence differs by age, gender and employment factors. @sec-formal contains the results of the fitted logistic regression models of Scottish Health Survey data, and analysis for such models based on the questions of interest. Then, we make the overall conclusion in @sec-con.
+
 
 ```{r}
 #| echo: false
