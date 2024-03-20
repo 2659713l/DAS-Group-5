@@ -132,7 +132,7 @@ ggplot(data = Project11, aes(x = ObesityStatus, group = Employment))+
 We fit the logistic regression model for obesity prevalence from 2013 to 2016,
 
 $$
-\mbox{ln}(\frac{p_i}{1-p_i}) = \alpha + \beta_{\mbox{Year}} \cdot \mathbb{I}_{\mbox{Year}}(x)
+\mbox{ln}(\frac{p}{1-p}) = \alpha + \beta_{\mbox{Year}} \cdot \mathbb{I}_{\mbox{Year}}(x)
 $$
 
 where
@@ -184,7 +184,7 @@ plot_model(model, show.values = TRUE, transform = NULL,
 Then we fit the logistic regression model for the explanatory variables, age group, sex, and employment,
 
 $$
-\mbox{ln}(\frac{p_i}{1-p_i}) = \alpha + \beta_{\mbox{AgeGroup}} \cdot \mathbb{I}_{\mbox{AgeGroup}}(x) + \beta_{\mbox{Sex}} \cdot \mathbb{I}_{\mbox{Sex}}(x) + \beta_{\mbox{Employment}} \cdot \mathbb{I}_{\mbox{Employment}}(x)
+\mbox{ln}(\frac{p}{1-p}) = \alpha + \beta_{\mbox{AgeGroup}} \cdot \mathbb{I}_{\mbox{AgeGroup}}(x) + \beta_{\mbox{Sex}} \cdot \mathbb{I}_{\mbox{Sex}}(x) + \beta_{\mbox{Employment}} \cdot \mathbb{I}_{\mbox{Employment}}(x)
 $$
 
 where
