@@ -1,5 +1,5 @@
 ---
-title: "Group 5 Analysis"
+title: "Group 5 Analysis - Obesity Prevalence"
 number-sections: true
 format: 
   html:
@@ -30,6 +30,8 @@ library(sjPlot)
 ```
 
 # Introduction {#sec-intro}
+
+Obesity levels across Scotland are monitored as part of the Scottish Health Surveys. Within these surveys there is information on socio-economic and lifestyle factors and their effect on the prevalence of obesity in Scotland. Using data gathered between 2013 and 2016, this report will look at whether or not the prevalence of obesity has changed over this time period. In addition looking at whether there are differences in obesity prevalence caused by age, sex and socio-economic status.
 
 @sec-exp shows the exploratory analysis of Scottish Health Survey data, and explores how the prevalence of obesity in Scotland changes over years, and whether obesity prevalence differs by age, gender and employment factors. @sec-formal contains the results of the fitted logistic regression models of Scottish Health Survey data, and analysis for such models based on the questions of interest. Then, we make the overall conclusion in @sec-con.
 
@@ -93,7 +95,7 @@ ggplot(data = Project11, aes(x = ObesityStatus, group = AgeGroup))+
   labs(y = "Proportion", fill = "AgeGroup")
 ```
 
-@fig-barSex illustrates the obesity proportion in females and males, respectively. There does not appear to be a significant difference in obesity rates between females and males, although the prevalence among females is slightly higher than that among males.
+@fig-barSex illustrates the obesity proportion in female and male, respectively. There appears to be some difference in obesity prevalence, with female having slightly higher proportion than male.
 
 ```{r}
 #| echo: false
@@ -235,6 +237,8 @@ plot_model(model, show.values = TRUE, transform = NULL,
            title = "", show.p = FALSE)
 ```
 
-We found that the associated 95% confidence interval for log-odds @fig-Odds does not include 0 in all age groups, so these ratios are statistically significant, that is, the increase in age does have a positive correlation with the prevalence of obesity. Similarly, obesity differs across sex, with male having lower proportion of obesity than female.However, the 95% confidence interval contains 0 for employment status in full-time education, paid employment, self-employed or on government training, looking for/intending to look for paid work and retired, then these ratios are not statistically significant. Therefore, there is no clear evidence to illustrate that obesity prevalence in Scotland differ significantly by employment status.
+We found that the associated 95% confidence interval for log-odds @fig-Odds does not include 0 in all age groups, so these ratios are statistically significant, that is, the increase in age does have a positive correlation with the prevalence of obesity. Similarly, obesity differs across sex, with male having lower proportion of obesity than female. However, the 95% confidence interval contains 0 for employment status in full-time education, paid employment, self-employed or on government training, looking for/intending to look for paid work and retired, then these ratios are not statistically significant. Therefore, there is no clear evidence to illustrate that obesity prevalence in Scotland differ significantly by employment status.
 
 # Conclusion {#sec-con}
+
+According to the above analysis, we can conclude that the prevalence of obesity in Scotland did not change significantly between 2013 and 2016, with a fluctuation of only 0.4%. Meanwhile, gender and age are important factors that contribute to differences in obesity. To be more specifically, male have a smaller proportion of obesity than female, and obesity prevalence increases with age. Also, a person is more likely to be obese if they are permanently unable to find a job, while people in full-time education are less likely to be obese.
