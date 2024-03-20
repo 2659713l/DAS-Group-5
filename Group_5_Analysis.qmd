@@ -163,7 +163,7 @@ tidy(model)[,c(1,2,3,5)] |>
   fmt_number(decimals=4)
 ```
 
-Also, we can plot the log-odds @fig-LogOdds for obesity by year to display 95% confidence interval graphically. The associated 95% confidence interval for thelog-odds includes 0 for each year, consequently the log-odds ratio is not statistically significant. Therefore, there is no evidence to show the prevalence of obesity in Scotland changed over the given years.
+Also, we can plot the log-odds @fig-LogOdds for obesity by year to display 95% confidence interval graphically. The associated 95% confidence interval for the log-odds includes 0 for each year, consequently the log-odds ratio is not statistically significant. Therefore, there is no evidence to show the prevalence of obesity in Scotland changed over the given years.
 
 ```{r}
 #| echo: false
@@ -205,6 +205,8 @@ where
 
 -   $\mathbb{I}_{\mbox{Employment}}(x)$ is an indicator function indicating the chosen Employment.
 
+According to @tbl-coefficients, we can find that the coefficients of all age groups except baseline are positive, which means that as age increases, people have a higher proportion, on average, of being obese. Similarly, the coefficient of employment status on looking after home/family, intending to look for paid work and permanently unable to work is also positive. It suggests that people in Scotland are more likely to be obese in these three employment statuses. Conversely, the coefficient on in paid employment, self employed or on government training is negative, that is, the prevalence of obesity is smaller among people in this state. Meanwhile, @tbl-coefficients also describes that obesity proportion for male are 0.1001 lower than women, on average.
+
 ```{r}
 #| echo: false
 #| tbl-cap: "Coefficients from the fitted logistic regression model with all explanatory variables"
@@ -218,6 +220,8 @@ tidy(model)[,c(1,2,3,5)] |>
   fmt_number(decimals=4)
 ```
 
+It's worth noting that some employment statuses have p-values above 0.05, such as Retired, then it shows that there is not statistically significant at the 5% level. Similarly, we can also plot log-odds @fig-Odds to graphically display the 95% confidence interval of the fitted model.
+
 ```{r}
 #| echo: false
 #| label: fig-Odds
@@ -230,5 +234,7 @@ tidy(model)[,c(1,2,3,5)] |>
 plot_model(model, show.values = TRUE, transform = NULL,
            title = "", show.p = FALSE)
 ```
+
+We found that the associated 95% confidence interval for log-odds @fig-Odds does not include 0 in all age groups, so these ratios are statistically significant, that is, the increase in age does have a positive correlation with the prevalence of obesity. Similarly, obesity differs across sex, with male having lower proportion of obesity than female.However, the 95% confidence interval contains 0 for employment status in full-time education, paid employment, self-employed or on government training, looking for/intending to look for paid work and retired, then these ratios are not statistically significant. Therefore, there is no clear evidence to illustrate that obesity prevalence in Scotland differ significantly by employment status.
 
 # Conclusion {#sec-con}
